@@ -32,6 +32,9 @@ def login():
         error = None
         form = LoginForm(request.form)
         if request.method == "POST" and  form.validate():
+            credenciales = {"email":form.email.data, "password":form.password.data}
+            request.post
+            
             if form.email.data != 'admin@um.es' or form.password.data != 'admin':
                 error = 'Invalid Credentials. Please try again.'
             else:
