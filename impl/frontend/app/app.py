@@ -1,12 +1,13 @@
 from flask import Flask, render_template, send_from_directory, url_for, request, redirect
 from flask_login import LoginManager, login_manager, current_user, login_user, login_required, logout_user
-
+import os
 # Usuarios
 from models import users, User
 
 # Login
 from forms import LoginForm
-
+import requests
+import json
 app = Flask(__name__, static_url_path='')
 login_manager = LoginManager()
 login_manager.init_app(app) # Para mantener la sesión
@@ -26,25 +27,26 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    else:
-        error = None
-        form = LoginForm(request.form)
-        if request.method == "POST" and  form.validate():
-            credenciales = {"email":form.email.data, "password":form.password.data}
-            request.post
-            
-            if form.email.data != 'admin@um.es' or form.password.data != 'admin':
-                error = 'Invalid Credentials. Please try again.'
-            else:
-                user = User(1, 'admin', form.email.data.encode('utf-8'),
-                            form.password.data.encode('utf-8'))
-                users.append(user)
-                login_user(user, remember=form.remember_me.data)
-                return redirect(url_for('index'))
+	if current_user.is_authenticated:
+		return redirect(url_for('index'))
+	else:
+		error = None
+		form = LoginForm(request.form)
+		if request.method == "POST" and  form.validate():
+			credenciales = {"email" : "dsevilla@um.es", "password" : "admin"}
+			REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+			#credenciales = {"email":form.email.data, "password":form.password.data}
+			response = requests.post("http://"+REST_SERVER+":8080/rest/checkLogin", json=credenciales)
+			#userName = form.email.data.encode('utf-8').split('@')[0]
+			if (response.status_code == 200):
+				user = User(1, form.email.data.encode('utf-8'), form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))
+				users.append(user)
+				login_user(user, remember=form.remember_me.data)
+				return redirect(url_for('index'))
+			else:
+				error = response.status_code  
 
-        return render_template('login.html', form=form,  error=error)
+	return render_template('login.html', form=form,  error=error)
 
 
 @app.route('/profile')

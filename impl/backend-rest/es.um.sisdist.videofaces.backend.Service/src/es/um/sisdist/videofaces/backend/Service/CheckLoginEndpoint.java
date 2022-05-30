@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response.Status;
 public class CheckLoginEndpoint
 {
     private AppLogicImpl impl = AppLogicImpl.getInstance();
-
+    @GET
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

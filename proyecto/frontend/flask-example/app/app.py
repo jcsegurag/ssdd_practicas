@@ -1,6 +1,7 @@
-from flask import Flask, render_template, send_from_directory, url_for, request, redirect
+from flask import Flask, render_template, send_from_directory, url_for, request, redirect, requests
 from flask_login import LoginManager, login_manager, current_user, login_user, login_required, logout_user
-
+import os
+import json
 # Usuarios
 from models import users, User
 
@@ -32,14 +33,17 @@ def login():
         error = None
         form = LoginForm(request.form)
         if request.method == "POST" and  form.validate():
-            if form.email.data != 'admin@um.es' or form.password.data != 'admin':
-                error = 'Invalid Credentials. Please try again.'
-            else:
-                user = User(1, 'admin', form.email.data.encode('utf-8'),
-                            form.password.data.encode('utf-8'))
+            REST_SERVER = os.environ.get('REST_SERVER', 'localhost');
+            credenciales = {"email":form.email.data, "password":form.password.data}
+            response = requests.post("http://"+REST_SERVER+":8080/rest/checkLogin", data = json.dumps(credenciales))
+		
+            if (response.status_code == 200):
+                user = User(1, response.status_code, form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))
                 users.append(user)
                 login_user(user, remember=form.remember_me.data)
                 return redirect(url_for('index'))
+            else:
+                error = 'Credenciales invalidas'        
 
         return render_template('login.html', form=form,  error=error)
 

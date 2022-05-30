@@ -5,18 +5,18 @@ services:
     build: frontend/.
     ports:
       - 5000:5000
+    env_file: sql.env
     environment:
       - FLASK_APP=app/app.py
       - FLASK_ENV=development
-      - SQL_SERVER=videofaces-mysql
-      - GRPC_SERVER=videofaces-grpc
-      - GRPC_SERVER_PORT=50051
 
 
   videofaces-mysql:
+    command: --max_allowed_packet=1024M
     build: videofaces-mysql/.
     ports:
-      - 3306
+      - 3306:3306
+    env_file: sql.env
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=videofaces
@@ -25,18 +25,10 @@ services:
     build: backend-rest/es.um.sisdist.videofaces.backend.Service/.
     ports:
       - 8080:8080
-    environment:
-      - SQL_SERVER=videofaces-mysql
-      - GRPC_SERVER=videofaces-grpc
-      - GRPC_SERVER_PORT=50051
+    env_file: sql.env
 
   videofaces-grpc:
     build: backend-grpc/es.um.sisdist.videofaces.backend.grpc.GrpcServiceImpl/.
     ports:
       - 50051
-    environment:
-      - SQL_SERVER=videofaces-mysql
-      - GRPC_SERVER=videofaces-grpc
-      - GRPC_SERVER_PORT=50051
-
-
+    env_file: sql.env
