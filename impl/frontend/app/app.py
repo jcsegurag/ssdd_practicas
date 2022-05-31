@@ -5,7 +5,7 @@ import os
 from models import users, User
 
 # Login
-from forms import LoginForm
+from forms import LoginForm, RegisterForm
 import requests
 import json
 app = Flask(__name__, static_url_path='')
@@ -33,9 +33,9 @@ def login():
 		error = None
 		form = LoginForm(request.form)
 		if request.method == "POST" and  form.validate():
-			credenciales = {"email" : "dsevilla@um.es", "password" : "admin"}
+			#credenciales = {"email" : "dsevilla@um.es", "password" : "admin"}
 			REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
-			#credenciales = {"email":form.email.data, "password":form.password.data}
+			credenciales = {"email":form.email.data, "password":form.password.data}
 			response = requests.post("http://"+REST_SERVER+":8080/rest/checkLogin", json=credenciales)
 			#userName = form.email.data.encode('utf-8').split('@')[0]
 			if (response.status_code == 200):
@@ -48,6 +48,17 @@ def login():
 
 	return render_template('login.html', form=form,  error=error)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	error = None
+	form = RegisterForm(request.form)
+	if request.method == "POST" and form.validate():
+		if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+			email = request.form['email']
+			username = request.form['username']
+			password = request.form['password']
+
+	return render_template('register.html', form=form,  error=error)
 
 @app.route('/profile')
 @login_required

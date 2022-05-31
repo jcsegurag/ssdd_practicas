@@ -91,4 +91,25 @@ public class AppLogicImpl
 
         return Optional.empty();
     }
+    
+    public Optional<User> registerUser(String email, String userName, String pass)
+    {
+        Optional<User> u = dao.getUserByEmail(email);
+
+        if (u.isPresent())
+        {
+        	//error
+            /*String hashed_pass = User.md5pass(pass);
+            if (0 == hashed_pass.compareTo(u.get().getPassword_hash()))
+                return u;*/
+        } 
+        else
+        {
+        	
+        	String hashed_pass = User.md5pass(pass);
+        	
+        }
+
+        return Optional.empty();
+    }
 }
