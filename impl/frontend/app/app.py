@@ -8,6 +8,7 @@ from models import users, User
 from forms import LoginForm, RegisterForm
 import requests
 import json
+import hashlib
 app = Flask(__name__, static_url_path='')
 login_manager = LoginManager()
 login_manager.init_app(app) # Para mantener la sesión
@@ -39,8 +40,9 @@ def login():
 			response = requests.post("http://"+REST_SERVER+":8080/rest/checkLogin", json=credenciales)
 			#userName = form.email.data.encode('utf-8').split('@')[0]
 			if (response.status_code == 200):
+				# Tratar usuario devuelto en el response a través de json
 				user = User(1, form.email.data.encode('utf-8'), form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))
-				users.append(user)
+				#users.append(user)
 				login_user(user, remember=form.remember_me.data)
 				return redirect(url_for('index'))
 			else:
@@ -51,12 +53,26 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 	error = None
+	REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+	url = "http://"+REST_SERVER+":8080/rest/register"
 	form = RegisterForm(request.form)
 	if request.method == "POST" and form.validate():
 		if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
 			email = request.form['email']
 			username = request.form['username']
 			password = request.form['password']
+			
+			hashpass = hashlib.md5(password.encode()).hexdigest()
+			newUser = {'username': username, 'password': hashpass}
+			
+			response = request.post(url, json=newUser)
+			if(x.status_code == 200):
+            	message = "Usuario registrado correctamente."
+        	elif (x.status_code == 409):
+            	message = "Usuario ya registrado."
+			else:
+				message = "Error"
+				return render_template('register.html', error=message)
 
 	return render_template('register.html', form=form,  error=error)
 

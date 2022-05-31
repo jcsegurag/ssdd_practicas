@@ -85,4 +85,11 @@ public class SQLUserDAO implements IUserDAO
 		}
 	}
 
+	@Override
+	public boolean createUser(User u) {
+		// Query insert conn
+		conn.
+		return false;
+	}
+
 }

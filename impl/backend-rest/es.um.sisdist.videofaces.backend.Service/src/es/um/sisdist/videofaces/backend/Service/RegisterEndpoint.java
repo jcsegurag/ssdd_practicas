@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.Response.Status;
 // POJO, no interface no extends
 
 @Path("/register")
-public class CheckLoginEndpoint
+public class RegisterEndpoint
 {
     private AppLogicImpl impl = AppLogicImpl.getInstance();
     @POST
@@ -25,11 +25,11 @@ public class CheckLoginEndpoint
     @Produces(MediaType.APPLICATION_JSON)
     public Response registerUser(UserDTO uo)
     {
-    	Optional<User> u 
-        //Optional<User> u = impl.checkLogin(uo.getEmail(), uo.getPassword());
+    	//Optional<User> u 
+        Optional<User> u = impl.checkRegister(uo.getEmail());
         if (u.isPresent())
-            return Response.ok(UserDTOUtils.toDTO(u.get())).build();
-        else
-            return Response.status(Status.FORBIDDEN).build();
+        	return Response.status(Status.CONFLICT).build();
+        // Registrar
+        //UserDTOUtils.fromDTO(uo).
     }
 }
