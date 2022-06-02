@@ -6,7 +6,8 @@ package es.um.sisdist.videofaces.backend.dao.models;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
+//import io.jsonwebtoken.Jwts;
+//import io.jsonwebtoken.SignatureAlgorithm;
 public class User
 {
 	static MessageDigest md;
@@ -38,6 +39,13 @@ public class User
 		{
 			return clearpass;
 		}
+	}
+	public static String generateToken(String id, String username) {
+		/*// HMAC utilizando el SHA-256 y la palabra alumno en base64
+		String token = Jwts.builder().setSubject(username).setIssuer(id)
+				.signWith(SignatureAlgorithm.HS256, "YWx1bW5v").compact();
+		//this.token = token;*/
+		return null;
 	}
 	
 	private String id;
@@ -150,14 +158,14 @@ public class User
 		this(email,email,password_hash, name, tOKEN, visits);
 		this.id = md5pass(email);
 	}
-
-	public User(String id, String email, String password_hash, String name, String tOKEN, int visits)
+//TODO Mirar si es mejor generar el token o simplemente asignarselo
+	public User(String id, String email, String password_hash, String name, String token, int visits)
 	{
 		this.id = id;
 		this.email = email;
 		this.password_hash = password_hash;
 		this.name = name;
-		TOKEN = tOKEN;
+		TOKEN = token;
 		this.visits = visits;
 	}
 

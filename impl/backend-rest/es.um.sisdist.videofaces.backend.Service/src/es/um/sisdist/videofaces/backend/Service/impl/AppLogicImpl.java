@@ -92,6 +92,11 @@ public class AppLogicImpl
         return Optional.empty();
     }
     
+ // Registro de usuario
+    public Optional<User> registerUser(String email, String username, String password) {
+    	return dao.createUser(email, username, password);
+    }
+ 
     public Optional<User> checkRegister(String email)
     {
     	Optional<User> u = dao.getUserByEmail(email);
