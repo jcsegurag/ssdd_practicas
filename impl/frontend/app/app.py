@@ -61,15 +61,16 @@ def register():
     REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
     form = RegisterForm(request.form)
     if request.method == "POST" and form.validate_on_submit():
-        credenciales = {"email":form.email.data, "username":form.username.data, "password":form.password.data}
+        credenciales = {"email":form.email.data, "name":form.username.data, "password":form.password.data}
         url = "http://" + REST_SERVER + ":8080/rest/register"
         #if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
-        response = request.post(url, json=credenciales)
+        response = requests.post(url, json=credenciales)
+        
         if(response.status_code == 201):
             user = User(int(response.json()['id']['string']), form.username, form.email.data.encode('utf-8'),
                     form.password.data.encode('utf-8'))
             users.append(user)
-            login_user(user, remember=form.remember_me.data)
+            login_user(user)
             error = response.status_code
             return redirect(url_for('index'))
         elif (response.status_code == 409):

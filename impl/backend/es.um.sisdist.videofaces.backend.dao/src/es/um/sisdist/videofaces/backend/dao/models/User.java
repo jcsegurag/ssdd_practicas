@@ -41,11 +41,11 @@ public class User
 		}
 	}
 	public static String generateToken(String id, String username) {
-		/*// HMAC utilizando el SHA-256 y la palabra alumno en base64
+		// HMAC utilizando el SHA-256 y la palabra alumno en base64
 		String token = Jwts.builder().setSubject(username).setIssuer(id)
 				.signWith(SignatureAlgorithm.HS256, "YWx1bW5v").compact();
-		//this.token = token;*/
-		return null;
+		this.token = token;
+		return token;
 	}
 	
 	private String id;
