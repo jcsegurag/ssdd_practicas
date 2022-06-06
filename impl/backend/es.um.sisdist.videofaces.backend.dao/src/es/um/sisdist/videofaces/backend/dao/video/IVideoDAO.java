@@ -13,4 +13,6 @@ public interface IVideoDAO
     public InputStream getStreamForVideo(String id);
 
     public Video.PROCESS_STATUS getVideoStatus(String id);
+
+	Optional<Video> saveVideo(String userid, String date, String filename, int process_status);
 }

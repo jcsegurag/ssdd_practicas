@@ -12,4 +12,5 @@ import es.um.sisdist.videofaces.backend.dao.user.IUserDAO;
 public interface IDAOFactory
 {
     public IUserDAO createSQLUserDAO();
+    public IUserDAO createSQLVideoDAO();
 }

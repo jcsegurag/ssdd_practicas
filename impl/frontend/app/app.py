@@ -5,7 +5,7 @@ import os
 from models import users, User
 
 # Login
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, SendVideoForm
 import requests
 import json
 import hashlib
@@ -18,7 +18,20 @@ login_manager.init_app(app)  # Para mantener la sesión
 # no cubriremos aquí.
 app.config['SECRET_KEY'] = 'qH1vprMjavek52cv7Lmfe1FoCexrrV8egFnB21jHhkuOHm8hJUe1hwn7pKEZQ1fioUzDb3sWcNK1pJVVIhyrgvFiIrceXpKJBFIn_i9-LTLBCc4cqaI3gjJJHU6kxuT8bnC7Ng'
 
+app.config["ALLOWED_VIDEO_EXTENSIONS"] = ["MP4", "AVI", "MKV"]
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(1024 * 1024 * 1024 * 1024)
 
+
+def allowed_video(filename):
+    if not "." in filename:
+        return False
+    ext = filename.rsplit(".", 1)[1]
+    if ext.upper() in app.config["ALLOWED_VIDEO_EXTENSIONS"]:
+        return True
+    else:
+        return False
+    
+    
 @app.route('/static/<path:path>')
 def serve_static(path):
     return send_from_directory('static', path)
@@ -37,7 +50,6 @@ def login():
         error = None
         form = LoginForm(request.form)
         if request.method == "POST" and  form.validate():
-            # credenciales = {"email" : "dsevilla@um.es", "password" : "admin"}
             REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
             credenciales = {"email":form.email.data, "password":form.password.data}
             response = requests.post("http://" + REST_SERVER + ":8080/rest/checkLogin", json=credenciales)
@@ -45,11 +57,9 @@ def login():
             if (response.status_code == 200):
                 # Tratar usuario devuelto en el response a través de json
                 user = User.get_user(form.email.data.encode('utf-8'))
-                if user is None:
-                    user = User(int(response.json()['id']), response.json()['name'], form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))  
-                    users.append(user)
-                    login_user(user, remember=form.remember_me.data)
-                    return redirect(url_for('index'))
+                user = User(int(response.json()['id']['string']), response.json()['name'], form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))  
+                login_user(user, remember=form.remember_me.data)
+                return redirect(url_for('profile'))
             else:
                 error = response.status_code 
         return render_template('login.html', form=form, error=error)
@@ -61,19 +71,10 @@ def register():
     REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
     form = RegisterForm(request.form)
     if request.method == "POST" and form.validate_on_submit():
-<<<<<<< HEAD
-        credencialesRegistro = {"email":form.email.data, "username":form.username.data, "password":form.password.data}
-        url = "http://" + REST_SERVER + ":8080/rest/register"
-        #if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
-        response = requests.post(url, json=credencialesRegistro)
-        error = url
-=======
         credenciales = {"email":form.email.data, "name":form.username.data, "password":form.password.data}
         url = "http://" + REST_SERVER + ":8080/rest/register"
         #if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         response = requests.post(url, json=credenciales)
-        
->>>>>>> 5dbbfadcd557f1d0613f48dc1b18c4b3f959765a
         if(response.status_code == 201):
             user = User(int(response.json()['id']['string']), form.username, form.email.data.encode('utf-8'),
                     form.password.data.encode('utf-8'))
@@ -93,7 +94,26 @@ def register():
 
     return render_template('register.html', form=form, error=error)
 
+@app.route('/send_video', methods=['GET', 'POST'])
+@login_required
+def send_video():
+    error = None
+    form = SendVideoForm()
+    if request.method == "POST" and form.validate():
+        # A video is being sent
+        files = {'file': (form.file.data.filename, # filename
+                          form.file.data)} # file stream to resend
+        # print(requests.Request('POST', 'http://localhost:8080/rest/uploadVideo',
+        #                        files=files).prepare().body.decode('utf-8'))
+        REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+        response = requests.post('http://'+REST_SERVER+':8080/rest/uploadVideo',
+                                 files=files)
+        if response.status_code == 200:
+            error = "Video uploaded successfully"
+        else:
+            error = response.text
 
+    return render_template('send_video.html', form=form, error=error)
 @app.route('/profile')
 @login_required
 def profile():

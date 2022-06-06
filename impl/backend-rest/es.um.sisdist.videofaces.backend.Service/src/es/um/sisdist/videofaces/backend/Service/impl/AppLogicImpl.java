@@ -36,7 +36,8 @@ public class AppLogicImpl
     private AppLogicImpl()
     {
         daoFactory = new DAOFactoryImpl();
-        dao = daoFactory.createSQLUserDAO();
+        daoUser = daoFactory.createSQLUserDAO();
+        daoVideo = daoFactory.createSQLVideoDAO();
 
         Optional<String> grpcServerName = Optional.ofNullable(System.getenv("GRPC_SERVER"));
         Optional<String> grpcServerPort = Optional.ofNullable(System.getenv("GRPC_SERVER_PORT"));
@@ -58,13 +59,13 @@ public class AppLogicImpl
 
     public Optional<User> getUserByEmail(String userId)
     {
-        Optional<User> u = dao.getUserByEmail(userId);
+        Optional<User> u = daoUser.getUserByEmail(userId);
         return u;
     }
 
     public Optional<User> getUserById(String userId)
     {
-        return dao.getUserById(userId);
+        return daoUser.getUserById(userId);
     }
 
     public boolean isVideoReady(String videoId)
@@ -80,7 +81,7 @@ public class AppLogicImpl
     // si procede,
     public Optional<User> checkLogin(String email, String pass)
     {
-        Optional<User> u = dao.getUserByEmail(email);
+        Optional<User> u = daoUser.getUserByEmail(email);
 
         if (u.isPresent())
         {
@@ -94,12 +95,12 @@ public class AppLogicImpl
     
  // Registro de usuario
     public Optional<User> registerUser(String email, String username, String password) {
-    	return dao.createUser(email, username, password);
+    	return daoUser.createUser(email, username, password);
     }
  
     public Optional<User> checkRegister(String email)
     {
-    	Optional<User> u = dao.getUserByEmail(email);
+    	Optional<User> u = daoUser.getUserByEmail(email);
     	if(u.isPresent())
     	{
 			return u;
@@ -107,5 +108,9 @@ public class AppLogicImpl
     	
     	else return Optional.empty();
 
+    }
+    
+    public Optional<Video> uploadVideo(S){
+    	Optional<Video> v = daoVideo.saveVideo)();
     }
 }
