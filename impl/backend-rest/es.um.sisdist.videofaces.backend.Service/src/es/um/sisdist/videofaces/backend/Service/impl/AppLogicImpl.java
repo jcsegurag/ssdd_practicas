@@ -110,7 +110,7 @@ public class AppLogicImpl
 
     }
     
-    public Optional<Video> uploadVideo(S){
-    	Optional<Video> v = daoVideo.saveVideo)();
+    public Optional<Video> uploadVideo(String filename, String userId, InputStream fileInputStream){
+    	Optional<Video> v = daoVideo.saveVideo(userId, LocalDate.now(), filename, fileInputStream);
     }
 }

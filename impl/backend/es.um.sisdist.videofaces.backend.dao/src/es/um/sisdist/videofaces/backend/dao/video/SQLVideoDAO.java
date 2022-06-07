@@ -1,7 +1,5 @@
 package es.um.sisdist.videofaces.backend.dao.video;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import es.um.sisdist.videofaces.backend.dao.models.User;
 import es.um.sisdist.videofaces.backend.dao.models.Video;
 import es.um.sisdist.videofaces.backend.dao.models.Video.PROCESS_STATUS;
 
@@ -40,7 +37,7 @@ public class SQLVideoDAO implements IVideoDAO {
 		}
     }
 	@Override
-	public Optional<Video> saveVideo(String userid, String date, String filename, PROCESS_STATUS process_status) {
+	public Optional<Video> saveVideo(String userid, String date, String filename, InputStream inputStream) {
 		// Get the max ID
 
 		String queryID = "SELECT max(CAST(id AS UNSIGNED)) FROM videos";
@@ -70,19 +67,11 @@ public class SQLVideoDAO implements IVideoDAO {
 			preparedStmt.setString(2, userid);
 			preparedStmt.setString(3, date);
 			preparedStmt.setString(4, filename);
-			int videoStatus;
-			if(process_status == PROCESS_STATUS.PROCESSING)
-				videoStatus = 0;
-			else
-				videoStatus = 1;
-			preparedStmt.setInt(5, videoStatus);
-			
-			File file = new File(filename);
-			FileInputStream inputStream = new FileInputStream(file);
+			preparedStmt.setInt(5, 0);
 			preparedStmt.setBlob(6, inputStream);
-			preparedStmt.execute();
+			preparedStmt.executeUpdate();
 			
-			return Optional.of(new Video(id, userid, process_status, date, filename));
+			return Optional.of(new Video(id, userid, PROCESS_STATUS.PROCESSING, date, filename));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

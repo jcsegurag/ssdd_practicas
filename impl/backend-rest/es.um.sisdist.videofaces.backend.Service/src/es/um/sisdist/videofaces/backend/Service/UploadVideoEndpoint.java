@@ -14,10 +14,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/uploadVideo")
+@Path("/uploadVideo")//Cambiar el path para coger el user id
 public class UploadVideoEndpoint
 {
-    // private AppLogicImpl impl = AppLogicImpl.getInstance();
+    private AppLogicImpl impl = AppLogicImpl.getInstance();
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -25,13 +25,7 @@ public class UploadVideoEndpoint
     public Response uploadVideo(@FormDataParam("file") InputStream fileInputStream,
             @FormDataParam("file") FormDataContentDisposition fileMetaData) throws Exception
     {
-	// El fichero que se recibe se copia en /tmp/output
-        File targetFile = new File("/tmp/output");
-
-        java.nio.file.Files.copy(fileInputStream, targetFile.toPath(),
-			StandardCopyOption.REPLACE_EXISTING);
-
-        fileInputStream.close();
+    	impl.uploadVideo(filename, userId, fileInputStream);
         return Response.ok(fileMetaData.getFileName()).build();
     }
 }

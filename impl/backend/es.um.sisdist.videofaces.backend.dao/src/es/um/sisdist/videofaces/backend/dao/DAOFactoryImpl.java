@@ -20,7 +20,7 @@ public class DAOFactoryImpl implements IDAOFactory
 		return new SQLUserDAO();
 	}
 	@Override
-	public IUserDAO createSQLVideoDAO()
+	public IVideoDAO createSQLVideoDAO()
 	{
 		return new SQLVideoDAO();
 	}
