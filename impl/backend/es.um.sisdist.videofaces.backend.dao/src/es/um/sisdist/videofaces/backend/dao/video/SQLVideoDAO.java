@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import es.um.sisdist.videofaces.backend.dao.models.Video;
@@ -37,7 +38,7 @@ public class SQLVideoDAO implements IVideoDAO {
 		}
     }
 	@Override
-	public Optional<Video> saveVideo(String userid, String date, String filename, InputStream inputStream) {
+	public Optional<Video> saveVideo(int userid, LocalDate date, String filename, InputStream inputStream) {
 		// Get the max ID
 
 		String queryID = "SELECT max(CAST(id AS UNSIGNED)) FROM videos";
@@ -64,14 +65,14 @@ public class SQLVideoDAO implements IVideoDAO {
 			PreparedStatement preparedStmt;
 			preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setString(1, id);
-			preparedStmt.setString(2, userid);
-			preparedStmt.setString(3, date);
+			preparedStmt.setString(2, String.valueOf(userid));
+			preparedStmt.setString(3, String.valueOf(date));
 			preparedStmt.setString(4, filename);
 			preparedStmt.setInt(5, 0);
 			preparedStmt.setBlob(6, inputStream);
 			preparedStmt.executeUpdate();
 			
-			return Optional.of(new Video(id, userid, PROCESS_STATUS.PROCESSING, date, filename));
+			return Optional.of(new Video(id, String.valueOf(userid), PROCESS_STATUS.PROCESSING, String.valueOf(date), filename));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

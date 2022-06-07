@@ -93,7 +93,7 @@ def register():
             return render_template('register.html', form=form, error=error)
 
     return render_template('register.html', form=form, error=error)
-
+'''
 @app.route('/send_video', methods=['GET', 'POST'])
 @login_required
 def send_video():
@@ -102,17 +102,36 @@ def send_video():
     if request.method == "POST" and form.validate():
         # A video is being sent
         files = {'file': (form.file.data.filename, # filename
-                          form.file.data)} # file stream to resend
+                          form.file.data, current_user.get_id())} # file stream to resend
         # print(requests.Request('POST', 'http://localhost:8080/rest/uploadVideo',
         #                        files=files).prepare().body.decode('utf-8'))
         REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
-        response = requests.post('http://'+REST_SERVER+':8080/rest/uploadVideo',
+        url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
+        #url = 'http://'+REST_SERVER+':8080/rest/users/'+ current_user.get_id() + '/' + video.filename() + '/video'
+        response = requests.post(url,
                                  files=files)
         if response.status_code == 200:
             error = "Video uploaded successfully"
         else:
             error = response.text
 
+    return render_template('send_video.html', form=form, error=error)
+'''
+@app.route('/send_video', methods=['GET', 'POST'])
+@login_required
+def send_video():
+    if 'video' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    video = request.files['video']
+    url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
+    if video.filename == '':
+        flash('No image selected for uploading')
+        return render_template('register.html', form=form, error=error)
+    else :
+         response = requests.post(
+                    url,
+                    data=video)
     return render_template('send_video.html', form=form, error=error)
 @app.route('/profile')
 @login_required

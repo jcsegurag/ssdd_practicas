@@ -3,13 +3,17 @@
  */
 package es.um.sisdist.videofaces.backend.Service.impl;
 
+import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import es.um.sisdist.videofaces.backend.dao.DAOFactoryImpl;
 import es.um.sisdist.videofaces.backend.dao.IDAOFactory;
 import es.um.sisdist.videofaces.backend.dao.models.User;
+import es.um.sisdist.videofaces.backend.dao.models.Video;
 import es.um.sisdist.videofaces.backend.dao.user.IUserDAO;
+import es.um.sisdist.videofaces.backend.dao.video.IVideoDAO;
 import es.um.sisdist.videofaces.backend.grpc.GrpcServiceGrpc;
 import es.um.sisdist.videofaces.backend.grpc.VideoAvailability;
 import es.um.sisdist.videofaces.backend.grpc.VideoSpec;
@@ -23,7 +27,8 @@ import io.grpc.ManagedChannelBuilder;
 public class AppLogicImpl
 {
     IDAOFactory daoFactory;
-    IUserDAO dao;
+    IUserDAO daoUser;
+    IVideoDAO daoVideo;
 
     private static final Logger logger = Logger.getLogger(AppLogicImpl.class.getName());
 
@@ -110,7 +115,7 @@ public class AppLogicImpl
 
     }
     
-    public Optional<Video> uploadVideo(String filename, String userId, InputStream fileInputStream){
-    	Optional<Video> v = daoVideo.saveVideo(userId, LocalDate.now(), filename, fileInputStream);
+    public Optional<Video> uploadVideo(String filename, int uid, InputStream fileInputStream){
+    	return daoVideo.saveVideo(uid, LocalDate.now(), filename, fileInputStream);
     }
 }

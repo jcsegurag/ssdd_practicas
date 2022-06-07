@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import com.google.protobuf.Empty;
 
 import es.um.sisdist.videofaces.backend.grpc.GrpcServiceGrpc;
-import es.um.sisdist.videofaces.backend.grpc.VideoAndChunkData;
 import es.um.sisdist.videofaces.backend.grpc.VideoAvailability;
+import es.um.sisdist.videofaces.backend.grpc.PetitionAccepted;
 import es.um.sisdist.videofaces.backend.grpc.VideoAvailabilityOrBuilder;
 import es.um.sisdist.videofaces.backend.grpc.VideoSpec;
 import io.grpc.stub.StreamObserver;
@@ -24,16 +24,23 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 	}
 
     
-	@Override
+	/*@Override
 	public StreamObserver<VideoAndChunkData> processVideo(StreamObserver<Empty> responseObserver)
 	{
 		// TODO Auto-generated method stub
 		return super.processVideo(responseObserver);
+	}*/
+    @Override
+	public void processVideo(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
+	{
+		// Llamar a la funcion de procesar un video
+    	responseObserver.onNext(PetitionAccepted.newBuilder().setAccepted(true).build());
+    	responseObserver.onCompleted();
 	}
-
 	@Override
 	public void isVideoReady(VideoSpec request, StreamObserver<VideoAvailability> responseObserver)
 	{
+		// Acceder a la bd a través del dao y comprobar si el video esta procesado
 		responseObserver.onNext(VideoAvailability.newBuilder().setAvailable(true).build());
 		responseObserver.onCompleted();
 	}

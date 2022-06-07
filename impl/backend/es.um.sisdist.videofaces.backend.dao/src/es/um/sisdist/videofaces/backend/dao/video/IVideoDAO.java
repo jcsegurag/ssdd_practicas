@@ -1,6 +1,7 @@
 package es.um.sisdist.videofaces.backend.dao.video;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import es.um.sisdist.videofaces.backend.dao.models.Video;
@@ -14,5 +15,5 @@ public interface IVideoDAO
 
     public Video.PROCESS_STATUS getVideoStatus(String id);
 
-	Optional<Video> saveVideo(String userid, String date, String filename, InputStream inputStream);
+	Optional<Video> saveVideo(int userid, LocalDate date, String filename, InputStream inputStream);
 }
