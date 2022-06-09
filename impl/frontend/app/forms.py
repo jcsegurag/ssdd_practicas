@@ -12,4 +12,4 @@ class RegisterForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired()])
 class SendVideoForm(FlaskForm):
-    file = FileField('file', validators=[DataRequired()])
+    video = FileField('video', validators=[DataRequired()])

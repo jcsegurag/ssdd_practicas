@@ -23,13 +23,13 @@ public class UploadVideoEndpoint
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadVideo(@FormDataParam("file") InputStream fileInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileMetaData, int userId) throws Exception
+    public Response uploadVideo(@FormDataParam("video") InputStream fileInputStream,
+            @FormDataParam("video") FormDataContentDisposition fileMetaData) throws Exception
     {
-    	int uid = userId;
+    	System.out.println("ESTAMOS EN EL UPLOAD ENDPOINT ----------------------------------------------------------------------------");
     	String filename = fileMetaData.getFileName();
     	
-    	impl.uploadVideo(filename, userId, fileInputStream);
+    	impl.uploadVideo(filename, 0, fileInputStream);
         return Response.ok(fileMetaData.getFileName()).build();
     }
 }

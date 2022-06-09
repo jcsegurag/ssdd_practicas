@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, url_for, request, redirect
+from flask import Flask, flash, render_template, send_from_directory, url_for, request, redirect
 from flask_login import LoginManager, login_manager, current_user, login_user, login_required, logout_user
 import os
 # Usuarios
@@ -120,18 +120,32 @@ def send_video():
 @app.route('/send_video', methods=['GET', 'POST'])
 @login_required
 def send_video():
-    if 'video' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    video = request.files['video']
-    url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
-    if video.filename == '':
-        flash('No image selected for uploading')
-        return render_template('register.html', form=form, error=error)
-    else :
-         response = requests.post(
-                    url,
-                    data=video)
+    error = None
+    form = SendVideoForm()
+    if request.method == "POST":
+        if 'video' not in request.files:
+            flash('No file part')
+            error = "Video no presente"
+            return redirect(url_for('index'))
+        videoD = request.files['video']
+        video = {'video': (videoD.filename, videoD)}
+        #videoData = {'video': video.read()}
+        REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+        url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
+        if videoD.filename == '':
+            flash('No image selected for uploading')
+            error = "Video sin nombre"
+            return redirect(url_for('index'))
+        else :
+            response = requests.post(
+                        url,
+                        files=video)
+            if response.status_code == 200:
+                error = "Status code 200"
+                return render_template('send_video.html', form=form, error=error)
+            else:
+                error = response.status_code
+                return render_template('send_video.html', form=form, error=error)
     return render_template('send_video.html', form=form, error=error)
 @app.route('/profile')
 @login_required
