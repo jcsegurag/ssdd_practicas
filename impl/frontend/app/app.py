@@ -57,7 +57,7 @@ def login():
             if (response.status_code == 200):
                 # Tratar usuario devuelto en el response a través de json
                 user = User.get_user(form.email.data.encode('utf-8'))
-                user = User(int(response.json()['id']['string']), response.json()['name'], form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))  
+                user = User(int(response.json()['userid']['string']), response.json()['name'], form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))  
                 login_user(user, remember=form.remember_me.data)
                 return redirect(url_for('profile'))
             else:
@@ -76,7 +76,7 @@ def register():
         #if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         response = requests.post(url, json=credenciales)
         if(response.status_code == 201):
-            user = User(int(response.json()['id']['string']), form.username, form.email.data.encode('utf-8'),
+            user = User(int(response.json()['userid']['string']), form.username, form.email.data.encode('utf-8'),
                     form.password.data.encode('utf-8'))
             users.append(user)
             login_user(user)
@@ -131,7 +131,8 @@ def send_video():
         video = {'video': (videoD.filename, videoD)}
         #videoData = {'video': video.read()}
         REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
-        url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
+        #url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
+        url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)+'/videos/'
         if videoD.filename == '':
             flash('No image selected for uploading')
             error = "Video sin nombre"

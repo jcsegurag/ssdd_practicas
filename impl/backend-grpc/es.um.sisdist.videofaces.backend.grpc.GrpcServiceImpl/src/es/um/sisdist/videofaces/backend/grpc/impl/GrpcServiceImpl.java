@@ -16,11 +16,11 @@ import io.grpc.stub.StreamObserver;
 class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase 
 {
 	private Logger logger;
-	
     public GrpcServiceImpl(Logger logger) 
     {
 		super();
 		this.logger = logger;
+		daoVideo = daoFactory.createSQLVideoDAO();
 	}
 
     
@@ -34,7 +34,25 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 	public void processVideo(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
 	{
 		// Llamar a la funcion de procesar un video
+    	
     	responseObserver.onNext(PetitionAccepted.newBuilder().setAccepted(true).build());
+    	return new StreamObserver<VideoSpec>() {
+			@Override
+			public void onCompleted() {
+				// Terminar la respuesta.
+				responseObserver.onCompleted();
+			}
+			@Override
+			public void onError(Throwable arg0) {
+			}
+			@Override
+			public void onNext(VideoSpec videoSpec) 
+			{
+				
+				logger.info("Add video  " + videoSpec.getId());
+		    	VideoFaces videofaces = new VideoFaces(videoSpec.getid(), videoSpec.getuid);
+			}
+		};
     	responseObserver.onCompleted();
 	}
 	@Override
@@ -45,13 +63,13 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 		responseObserver.onCompleted();
 	}
 
-/*
+
 	@Override
-	public void storeImage(ImageData request, StreamObserver<Empty> responseObserver)
+	public void storeImage(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
     {
-		logger.info("Add image " + request.getId());
-    	imageMap.put(request.getId(),request);
-    	responseObserver.onNext(Empty.newBuilder().build());
+		logger.info("Add video " + request.getId());
+    	videoMap.put(request.getId(), request);
+    	responseObserver.onNext(PetitionAccepted.newBuilder().build());
     	responseObserver.onCompleted();
 	}
 
@@ -63,7 +81,7 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 
 		// Se retorna un objeto que, al ser llamado en onNext() con cada
 		// elemento enviado por el cliente, reacciona correctamente
-		return new StreamObserver<ImageData>() {
+		return new StreamObserver<VideoSpec>() {
 			@Override
 			public void onCompleted() {
 				// Terminar la respuesta.
@@ -73,10 +91,10 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 			public void onError(Throwable arg0) {
 			}
 			@Override
-			public void onNext(ImageData imagedata) 
+			public void onNext(VideoSpec videoSpec) 
 			{
-				logger.info("Add image (multiple) " + imagedata.getId());
-		    	imageMap.put(imagedata.getId(), imagedata);	
+				logger.info("Add video  " + videoSpec.getId());
+		    	int videoId = request.getId();	
 			}
 		};
 	}
@@ -92,5 +110,5 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 		// TODO Auto-generated method stub
 		return super.obtainCollage(responseObserver);
 	}
-	*/
+	
 }

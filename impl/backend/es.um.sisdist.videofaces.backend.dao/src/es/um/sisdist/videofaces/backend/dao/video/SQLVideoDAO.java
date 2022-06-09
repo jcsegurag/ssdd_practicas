@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import es.um.sisdist.videofaces.backend.dao.models.Video;
@@ -38,7 +39,7 @@ public class SQLVideoDAO implements IVideoDAO {
 		}
     }
 	@Override
-	public Optional<Video> saveVideo(int userid, LocalDate date, String filename, InputStream inputStream) {
+	public Optional<Video> saveVideo(String userid, LocalDateTime date, String filename, InputStream inputStream) {
 		// Get the max ID
 
 		String queryID = "SELECT max(CAST(id AS UNSIGNED)) FROM videos";
@@ -65,14 +66,14 @@ public class SQLVideoDAO implements IVideoDAO {
 			PreparedStatement preparedStmt;
 			preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setString(1, id);
-			preparedStmt.setString(2, String.valueOf(userid));
+			preparedStmt.setString(2, userid);
 			preparedStmt.setString(3, String.valueOf(date));
 			preparedStmt.setString(4, filename);
 			preparedStmt.setInt(5, 0);
 			preparedStmt.setBlob(6, inputStream);
 			preparedStmt.executeUpdate();
 			
-			return Optional.of(new Video(id, String.valueOf(userid), PROCESS_STATUS.PROCESSING, String.valueOf(date), filename));
+			return Optional.of(new Video(id, userid, PROCESS_STATUS.PROCESSING, String.valueOf(date), filename));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -81,8 +82,27 @@ public class SQLVideoDAO implements IVideoDAO {
 	}
 	@Override
 	public Optional<Video> getVideoById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	    try{
+			statement = con.prepareStatement("SELECT * FROM videos WHERE id=?");
+	        statement.setInt(1, guestID);
+			rs.next();
+	        ResultSet rs = statement.executeQuery();
+	        Video video;
+	        while(rs.next()){
+	        	
+	            video.id = rs.getString(1);
+	            video.userid = rs.getString(2);
+	            video.date = rs.getString(3);
+	            video.filename = rs.getString(4);
+	            video.pstatus = rs.getInt(5);
+	        } catch(Exception e){
+	            System.out.print(e);
+	        }
+		
+		return Optional.of(video);
+		
+
+		
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class RegisterEndpoint
 		Optional<User> user = impl.registerUser(userDTO.getEmail(), userDTO.getName(), userDTO.getPassword());
 		System.out.println(user.get().getEmail() + "|| " + user.get().getName() + " || " + user.get().getPassword_hash()
 				+ " || " + user.get().getId());
-		JsonObject value = Json.createObjectBuilder().add("id", user.get().getId()).add("name", user.get().getName())
+		JsonObject value = Json.createObjectBuilder().add("userid", user.get().getId()).add("name", user.get().getName())
 				.add("email", user.get().getEmail()).add("password", user.get().getPassword_hash()).build();
 		
 		return Response.ok(value).status(Status.CREATED).build();
