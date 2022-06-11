@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import java.sql.Blob;
 import es.um.sisdist.videofaces.backend.dao.models.Video;
 import es.um.sisdist.videofaces.backend.dao.models.Video.PROCESS_STATUS;
 
@@ -81,8 +81,8 @@ public class SQLVideoDAO implements IVideoDAO {
 		return Optional.empty();
 	}
 	@Override
-	public Optional<Video> getVideoById(String id) {
-	    try{
+	public Optional<Blob> getVideoById(String id) {
+	    /*try{
 			statement = con.prepareStatement("SELECT * FROM videos WHERE id=?");
 	        statement.setInt(1, guestID);
 			rs.next();
@@ -97,18 +97,55 @@ public class SQLVideoDAO implements IVideoDAO {
 	            video.pstatus = rs.getInt(5);
 	        } catch(Exception e){
 	            System.out.print(e);
-	        }
-		
-		return Optional.of(video);
-		
+	        }*/
+		PreparedStatement statement;
+		Blob videoData;
+	    try{
+			statement = conn.prepareStatement("SELECT * FROM videos WHERE id=?");
+			ResultSet rs = statement.executeQuery();
+	        statement.setString(1, id);
+			rs.next();
+	        videoData = rs.getBlob(6);
+	        /*Video video;
+	        while(rs.next()){
+	        	
+	            video.id = rs.getString(1);
+	            video.userid = rs.getString(2);
+	            video.date = rs.getString(3);
+	            video.filename = rs.getString(4);
+	            video.pstatus = rs.getInt(5);*/
+	        return Optional.of(videoData);
+	        } catch(Exception e){
+	            System.out.print(e);
+	        }		
 
+		return null;
 		
 	}
 
 	@Override
 	public InputStream getStreamForVideo(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement statement;
+		Blob videoData;
+	    try{
+			statement = conn.prepareStatement("SELECT * FROM videos WHERE id=?");
+	        statement.setString(1, id);
+	        ResultSet rs = statement.executeQuery();
+			rs.next();
+			videoData = rs.getBlob(6);
+	        /*Video video;
+	        while(rs.next()){
+	        	
+	            video.id = rs.getString(1);
+	            video.userid = rs.getString(2);
+	            video.date = rs.getString(3);
+	            video.filename = rs.getString(4);
+	            video.pstatus = rs.getInt(5);*/
+			return videoData.getBinaryStream();
+	        } catch(Exception e){
+	            System.out.print(e);
+	        }		
+	    return null;
 	}
 
 	@Override

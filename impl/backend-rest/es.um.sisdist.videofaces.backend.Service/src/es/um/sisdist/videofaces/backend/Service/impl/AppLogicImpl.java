@@ -14,9 +14,6 @@ import java.util.logging.Logger;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
-
-import es.um.sisdist.collage.CollageClient;
-import es.um.sisdist.collage.ImageData;
 import es.um.sisdist.videofaces.backend.dao.DAOFactoryImpl;
 import es.um.sisdist.videofaces.backend.dao.IDAOFactory;
 import es.um.sisdist.videofaces.backend.dao.models.User;
@@ -24,6 +21,7 @@ import es.um.sisdist.videofaces.backend.dao.models.Video;
 import es.um.sisdist.videofaces.backend.dao.user.IUserDAO;
 import es.um.sisdist.videofaces.backend.dao.video.IVideoDAO;
 import es.um.sisdist.videofaces.backend.grpc.GrpcServiceGrpc;
+import es.um.sisdist.videofaces.backend.grpc.PetitionAccepted;
 import es.um.sisdist.videofaces.backend.grpc.VideoAvailability;
 import es.um.sisdist.videofaces.backend.grpc.VideoSpec;
 import io.grpc.ManagedChannel;
@@ -44,7 +42,6 @@ public class AppLogicImpl
     private static final Logger logger = Logger.getLogger(AppLogicImpl.class.getName());
 
     private final ManagedChannel channel;
-    private final GrpcServiceGrpc.GrpcServiceBlockingStub blockingStub;
     private final GrpcServiceGrpc.GrpcServiceStub asyncStub;
 
     static AppLogicImpl instance = new AppLogicImpl();
@@ -64,7 +61,6 @@ public class AppLogicImpl
                 // to avoid
                 // needing certificates.
                 .usePlaintext().build();
-        blockingStub = GrpcServiceGrpc.newBlockingStub(channel);
         asyncStub = GrpcServiceGrpc.newStub(channel);
     }
 
@@ -84,12 +80,12 @@ public class AppLogicImpl
         return daoUser.getUserById(userId);
     }
 
-    public boolean isVideoReady(String videoId)
+    /*public boolean isVideoReady(String videoId)
     {
         // Test de grpc, puede hacerse con la BD
-        VideoAvailability available = blockingStub.isVideoReady(VideoSpec.newBuilder().setId(videoId).build());
+        VideoAvailability available = asyncStub.isVideoReady(VideoSpec.newBuilder().setId(videoId).build(), null);
         return available.getAvailable();
-    }
+    }*/
 
     // El frontend, a través del formulario de login,
     // envía el usuario y pass, que se convierte a un DTO. De ahí
@@ -129,14 +125,14 @@ public class AppLogicImpl
     public void sendVideoGrpc(Optional<Video> video)
     {
   	  // Imágenes para enviar
-  	  VideoSpec video = VideoSpec.newBuilder().setid(video.getId()).setuid(video.getUserid()).build();
+  	  VideoSpec videoSpec = VideoSpec.newBuilder().setId(video.get().getId()).setUid(video.get().getUserid()).build();
   	  
-  	  try {
-  		  blockingStub.processVideo(video);		  
+  	 /* try {
+  		  blockingStub.processVideo(videoSpec);		  
   	  } catch (StatusRuntimeException e) {
   		  logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
   		  return;
-  	  }
+  	  }*/
 
   	  // Stream
   	  try {
@@ -145,7 +141,7 @@ public class AppLogicImpl
   		  StreamObserver<PetitionAccepted> soPetitionAccepted= new StreamObserver<PetitionAccepted>() {
 
   			  @Override
-  			  public void onNext(Empty value) {
+  			  public void onNext(PetitionAccepted value) {
   			  }
 
   			  @Override
@@ -159,8 +155,8 @@ public class AppLogicImpl
   			  }
   		  };
   		  
-  		  StreamObserver<VideoSpec> so = asyncStub.storeImages(soPetitionAccepted);
-  		  so.onNext(video);
+  		  StreamObserver<VideoSpec> so = asyncStub.processVideo(soPetitionAccepted);
+  		  so.onNext(videoSpec);
   		  so.onCompleted();
   		  
   		  // Esperar la respuesta
@@ -180,8 +176,8 @@ public class AppLogicImpl
     }
     public Optional<Video> uploadVideo(String filename, String uid, InputStream fileInputStream){
     	Optional<Video> video = daoVideo.saveVideo(uid, LocalDateTime.now(), filename, fileInputStream);
-    	
-    	return daoVideo.saveVideo(uid, LocalDateTime.now(), filename, fileInputStream);
+    	this.sendVideoGrpc(video);
+    	return video;
     }
     
 }

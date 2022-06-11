@@ -9,8 +9,8 @@ package es.um.sisdist.videofaces.backend.grpc;
 
 service GrpcService
 {
-	rpc ProcessVideo(VideoSpec) returns (PetitionAccepted);
-    rpc IsVideoReady(VideoSpec) returns (VideoAvailability);
+	rpc ProcessVideo(stream VideoSpec) returns (PetitionAccepted);
+    //rpc IsVideoReady(VideoSpec) returns (VideoAvailability);
 }
 
 // Se envían trozos de vídeo, ya que puede ser muy grande

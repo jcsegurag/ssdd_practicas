@@ -3,7 +3,7 @@ package es.um.sisdist.videofaces.backend.grpc.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
+import java.lang.Thread;
 import com.google.protobuf.Empty;
 
 import es.um.sisdist.videofaces.backend.grpc.GrpcServiceGrpc;
@@ -11,16 +11,23 @@ import es.um.sisdist.videofaces.backend.grpc.VideoAvailability;
 import es.um.sisdist.videofaces.backend.grpc.PetitionAccepted;
 import es.um.sisdist.videofaces.backend.grpc.VideoAvailabilityOrBuilder;
 import es.um.sisdist.videofaces.backend.grpc.VideoSpec;
+import es.um.sisdist.videofaces.backend.dao.DAOFactoryImpl;
+import es.um.sisdist.videofaces.backend.dao.IDAOFactory;
+import es.um.sisdist.videofaces.backend.dao.video.IVideoDAO;
+import es.um.sisdist.videofaces.backend.facedetect.VideoFaces;
 import io.grpc.stub.StreamObserver;
 
 class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase 
 {
 	private Logger logger;
+    IDAOFactory daoFactory;
+    IVideoDAO daoVideo;
     public GrpcServiceImpl(Logger logger) 
     {
 		super();
 		this.logger = logger;
-		daoVideo = daoFactory.createSQLVideoDAO();
+        daoFactory = new DAOFactoryImpl();
+        daoVideo = daoFactory.createSQLVideoDAO();
 	}
 
     
@@ -31,7 +38,7 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 		return super.processVideo(responseObserver);
 	}*/
     @Override
-	public void processVideo(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
+	public StreamObserver<VideoSpec> processVideo(StreamObserver<PetitionAccepted> responseObserver)
 	{
 		// Llamar a la funcion de procesar un video
     	
@@ -50,31 +57,32 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 			{
 				
 				logger.info("Add video  " + videoSpec.getId());
-		    	VideoFaces videofaces = new VideoFaces(videoSpec.getid(), videoSpec.getuid);
+		    	VideoFaces videofaces = new VideoFaces(videoSpec.getId(), videoSpec.getUid());
+		    	Thread thread = new Thread(videofaces);
+		    	thread.start();
 			}
 		};
-    	responseObserver.onCompleted();
 	}
-	@Override
+	/*@Override
 	public void isVideoReady(VideoSpec request, StreamObserver<VideoAvailability> responseObserver)
 	{
 		// Acceder a la bd a través del dao y comprobar si el video esta procesado
 		responseObserver.onNext(VideoAvailability.newBuilder().setAvailable(true).build());
 		responseObserver.onCompleted();
-	}
+	}*/
 
 
-	@Override
+	/*@Override
 	public void storeImage(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
     {
 		logger.info("Add video " + request.getId());
     	videoMap.put(request.getId(), request);
     	responseObserver.onNext(PetitionAccepted.newBuilder().build());
     	responseObserver.onCompleted();
-	}
+	}*/
 
-	@Override
-	public StreamObserver<ImageData> storeImages(StreamObserver<Empty> responseObserver) 
+	/*@Override
+	public StreamObserver<VideoSpec> storeImages(StreamObserver<PetitionAccepted> responseObserver) 
 	{
 		// La respuesta, sólo un objeto Empty
 		responseObserver.onNext(Empty.newBuilder().build());
@@ -97,18 +105,18 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 		    	int videoId = request.getId();	
 			}
 		};
-	}
+	}*/
 
-	@Override
-	public void obtainImage(ImageSpec request, StreamObserver<ImageData> responseObserver) {
+	/*@Override
+	public void obtainImage(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver) {
 		// TODO Auto-generated method stub
 		super.obtainImage(request, responseObserver);
 	}
 
 	@Override
-	public StreamObserver<ImageSpec> obtainCollage(StreamObserver<ImageData> responseObserver) {
+	public StreamObserver<VideoSpec> obtainCollage(StreamObserver<PetitionAccepted> responseObserver) {
 		// TODO Auto-generated method stub
 		return super.obtainCollage(responseObserver);
-	}
+	}*/
 	
 }
