@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="my-3 p-3 bg-white rounded box-shadow">
+  <h2 class="border-bottom border-gray pb-2 mb-0">Videos del usuario</h2>
+  <div class="media text-muted pt-3">
+    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+    <table class="table" style="width: 100%">
+      {% for video in data %}
+      <h2>{{video.filename}}</h2>
+      {% endfor %}
+      <thead>
+        <tr> 
+          <th scope="col" >ID</th>
+          <th scope="col">Filename</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for video in data %}
+        <tr>
+          <td>{{video.vid}}</td>
+          <td>{{video.filename}} </td>
+          <td>
+            <form action="{{ url_for('video_info',idVideo=video.vid) }}" method="get">
+              <input type=submit value="Ver detalles" />
+            </form>
+          </td>
+  
+          
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+    </p>
+  </div>
+
+</div>
+{% endblock %}

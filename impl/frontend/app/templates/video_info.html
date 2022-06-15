@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block custom_style %}
+ <!-- Custom styles for this template -->
+    <link href="/static/table.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="my-3 p-3 bg-white rounded box-shadow">
+  <h2 class="border-bottom border-gray pb-2 mb-0">Faces del video</h2>
+  <div>
+    <table class="table" style="width: 100%">
+      <thead>
+        <tr> 
+          <th scope="col">ID</th>
+          <th scope="col">Imagen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in listFaces %}
+        
+        <tr>
+          <td>{{f.fid}}</td>
+          <td> <img src="data:image/jpg;base64,{{f.faceData}}"/></td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+    </p>
+  </div>
+
+</div>
+{% endblock %}
