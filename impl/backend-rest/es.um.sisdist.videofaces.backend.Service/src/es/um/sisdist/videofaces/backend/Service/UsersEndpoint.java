@@ -39,13 +39,12 @@ public class UsersEndpoint
     private AppLogicImpl impl = AppLogicImpl.getInstance();
     
     @GET
-    @Path("/{username}")
+    @Path("/{userid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserDTO getUserInfo(@PathParam("username") String username)
+    public UserDTO getUserInfo(@PathParam("userid") String uid)
     {
-    	return UserDTOUtils.toDTO(impl.getUserByEmail(username).orElse(null));    	
-    }
-    
+    	return UserDTOUtils.toDTO(impl.getUserById(uid).orElse(null));    	
+    } 
     @POST
     @Path("/{userid}/videos")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -53,7 +52,6 @@ public class UsersEndpoint
     public Response uploadVideo(@FormDataParam("video") InputStream fileInputStream,
             @FormDataParam("video") FormDataContentDisposition fileMetaData, @PathParam ("userid") String uid) throws Exception
     {
-    	System.out.println("ESTAMOS EN EL UPLOAD ENDPOINT ----------------------------------------------------------------------------");
     	String filename = fileMetaData.getFileName();
     	impl.uploadVideo(filename, uid, fileInputStream);
         return Response.ok(fileMetaData.getFileName()).build();
@@ -68,10 +66,9 @@ public class UsersEndpoint
     	for(Video v : listaVideos) {
     		listaVideosDTO.add(VideoDTOUtils.toDTO(v));
     	}
-    	System.out.println("ESTAMOS EN USERS ANTES DE RESPONSE----------------------------------------------------------------------------"+uid);
     	
     	return Response.status(Response.Status.OK).entity(listaVideosDTO).type(MediaType.APPLICATION_JSON).build();
-    	//return Response.ok(listaVideosDTO).status(Status.OK).build();
+
 
     }
     
@@ -84,7 +81,6 @@ public class UsersEndpoint
     	LinkedList<Face> listaFaces = impl.getFacesByVid(vid);
     	LinkedList<FaceDTO> listaFacesDTO = new LinkedList<FaceDTO>();
     	for(Face f : listaFaces) {
-    		System.out.println("ESTAMOS EN EL LOOP DE LISTA FACES ----------------------------------------------------------------------------" + f.getFid());
     		listaFacesDTO.add(FaceDTOUtils.toDTO(f));
     	}
     	return Response.status(Response.Status.OK).entity(listaFacesDTO).type(MediaType.APPLICATION_JSON).build();

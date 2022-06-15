@@ -55,15 +55,15 @@ def login():
             REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
             credenciales = {"email":form.email.data, "password":form.password.data}
             response = requests.post("http://" + REST_SERVER + ":8080/rest/checkLogin", json=credenciales)
-            # userName = form.email.data.encode('utf-8').split('@')[0]
             if (response.status_code == 200):
                 # Tratar usuario devuelto en el response a través de json
-                user = User.get_user(form.email.data.encode('utf-8'))
                 user = User(int(response.json()['userid']['string']), response.json()['name'], form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))  
                 login_user(user, remember=form.remember_me.data)
                 return redirect(url_for('profile'))
+            elif(response.status_code == 403):
+                error = "Credenciales invalidas"
             else:
-                error = response.status_code 
+                error = 'Algo ha funcionado mal, error : ' +response.status_code
         return render_template('login.html', form=form, error=error)
 
 
@@ -75,24 +75,16 @@ def register():
     if request.method == "POST" and form.validate_on_submit():
         credenciales = {"email":form.email.data, "name":form.username.data, "password":form.password.data}
         url = "http://" + REST_SERVER + ":8080/rest/register"
-        #if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         response = requests.post(url, json=credenciales)
         if(response.status_code == 201):
-            user = User(int(response.json()['userid']['string']), form.username, form.email.data.encode('utf-8'),
-                    form.password.data.encode('utf-8'))
+            user = User(int(response.json()['userid']['string']), form.username, form.email.data.encode('utf-8'), form.password.data.encode('utf-8'))
             users.append(user)
             login_user(user)
-            error = response.status_code
             return redirect(url_for('index'))
         elif (response.status_code == 409):
-            error = response.status_code
-            return render_template('register.html', form=form, error=error)
-        elif (response.status_code == 200):
-            error = response.status_code
-            return render_template('register.html', form=form, error=error)
+            error = 'El usuario ya se encuentra en la base de datos, error 409'
         else:
-            error = response.status_code
-            return render_template('register.html', form=form, error=error)
+            error = 'Algo ha funcionado mal, error : ' +response.status_code
 
     return render_template('register.html', form=form, error=error)
 
@@ -106,12 +98,11 @@ def video_info(idVideo):
     response = requests.get(url)
     
     if response.status_code == 200: 
-        data = response.json()
         jsonData = json.loads(response.text)
-        return render_template('video_info.html', listFaces=jsonData, error=error)
+        return render_template('video_info.html', listFaces=jsonData)
     
-    
-    return render_template('list_videos.html', listFaces=data, error=error)
+    error = 'Algo ha funcionado mal, error : ' +response.status_code
+    return render_template('list_videos.html', error=error)
 
 
 
@@ -124,14 +115,13 @@ def list_videos():
         REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
         url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)+'/videos/'
         response = requests.get(url)
-        print('-------------------------------------------------------------------------')
         if response.status_code == 200: 
             data = response.json()
+            return render_template('list_videos.html', data=data)
+        
+    error = 'Algo ha funcionado mal'
+    return render_template('send_video.html', error=error)
 
-            return render_template('list_videos.html', data=data, error=error)
-    error = response.status_code
-    form = RegisterForm(request.form)
-    return render_template('register.html', form = form, error=error)
 @app.route('/send_video', methods=['GET', 'POST'])
 @login_required
 def send_video():
@@ -141,32 +131,30 @@ def send_video():
         if 'video' not in request.files:
             flash('No file part')
             error = "Video no presente"
-            return redirect(url_for('index'))
-        videoD = request.files['video']
-        video = {'video': (videoD.filename, videoD)}
-        #videoData = {'video': video.read()}
+            return render_template('send_video.html', form=form, error=error)
+        videoData= request.files['video']
+        videoDict = {'video': (videoData.filename, videoData)}
         REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
-        #url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
         url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)+'/videos/'
-        if videoD.filename == '':
+        if videoData.filename == '':
             flash('No image selected for uploading')
             error = "Video sin nombre"
             return redirect(url_for('index'))
         else :
-            response = requests.post(
-                        url,
-                        files=video)
+            response = requests.post(url, files=videoDict)
             if response.status_code == 200:
-                error = "Status code 200"
-                return render_template('send_video.html', form=form, error=error)
+                return render_template('send_video.html', form=form)
             else:
-                error = response.status_code
-                return render_template('send_video.html', form=form, error=error)
+                error = 'Algo ha funcionado mal'
     return render_template('send_video.html', form=form, error=error)
 @app.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html')
+    REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+    url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)
+    response = requests.get(url)
+    return render_template('profile.html', id=response.json()['id'], email=response.json()['email'], token=response.json()['TOKEN'], name=response.json()['name'], visits=response.json()['visits'])
+
 
 
 @app.route('/logout')

@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
 option java_package = "es.um.sisdist.videofaces.backend.grpc";

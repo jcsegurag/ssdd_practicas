@@ -57,6 +57,15 @@ public class User
 	
 	private int visits;
 	
+	public User(String id, String email, String password_hash, String name, String token, int visits)
+	{
+		this.id = id;
+		this.email = email;
+		this.password_hash = password_hash;
+		this.name = name;
+		TOKEN = token;
+		this.visits = visits;
+	}
 	/**
 	 * @return the id
 	 */
@@ -152,22 +161,7 @@ public class User
 	{
 		this.visits = visits;
 	}
-
-	public User(String email, String password_hash, String name, String tOKEN, int visits)
-	{
-		this(email,email,password_hash, name, tOKEN, visits);
-		this.id = md5pass(email);
-	}
-//TODO Mirar si es mejor generar el token o simplemente asignarselo
-	public User(String id, String email, String password_hash, String name, String token, int visits)
-	{
-		this.id = id;
-		this.email = email;
-		this.password_hash = password_hash;
-		this.name = name;
-		TOKEN = token;
-		this.visits = visits;
-	}
+	
 
 	public User()
 	{

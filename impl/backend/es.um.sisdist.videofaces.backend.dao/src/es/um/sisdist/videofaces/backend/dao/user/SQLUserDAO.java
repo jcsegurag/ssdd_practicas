@@ -63,13 +63,13 @@ public class SQLUserDAO implements IUserDAO
 	}
 
 	@Override
-	public Optional<User> getUserByEmail(String id)
+	public Optional<User> getUserByEmail(String email)
 	{
 		PreparedStatement stm;
 		try
 		{
 			stm = conn.prepareStatement("SELECT * from users WHERE email = ?");
-			stm.setString(1, id);
+			stm.setString(1, email);
 			ResultSet result = stm.executeQuery();
 			if (result.next())
 				return createUser(result);
@@ -79,7 +79,22 @@ public class SQLUserDAO implements IUserDAO
 		}
 		return Optional.empty();
 	}
-
+	@Override
+	public void addVisita(String id, int visits)
+	{
+		PreparedStatement stm;
+		try
+		{
+			stm = conn.prepareStatement("UPDATE users SET visits = ? WHERE id = ?");
+			System.out.println("----------------------------------LAS VISITAS SON: "+visits++);
+			stm.setInt(1, visits++);
+			stm.setString(2, id);
+			stm.executeUpdate();
+		} catch (SQLException e)
+		{
+			// Fallthrough
+		}
+	}
 	private Optional<User> createUser(ResultSet result)
 	{
 		try

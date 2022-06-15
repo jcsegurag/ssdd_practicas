@@ -71,9 +71,9 @@ public class AppLogicImpl
         return instance;
     }
 
-    public Optional<User> getUserByEmail(String userId)
+    public Optional<User> getUserByEmail(String email)
     {
-        Optional<User> u = daoUser.getUserByEmail(userId);
+        Optional<User> u = daoUser.getUserByEmail(email);
         return u;
     }
 
@@ -82,6 +82,9 @@ public class AppLogicImpl
         return daoUser.getUserById(userId);
     }
 
+    public void addVisita(String uid, int visits) {
+    	daoUser.addVisita(uid, visits);
+    }
     public Optional<Video> getVideoById(String vid)
     {
         return daoVideo.getVideoById(vid);
@@ -139,13 +142,6 @@ public class AppLogicImpl
     {
   	  // Imágenes para enviar
   	  VideoSpec videoSpec = VideoSpec.newBuilder().setId(video.get().getId()).setUid(video.get().getUserid()).build();
-  	  
-  	 /* try {
-  		  blockingStub.processVideo(videoSpec);		  
-  	  } catch (StatusRuntimeException e) {
-  		  logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-  		  return;
-  	  }*/
 
   	  // Stream
   	  try {

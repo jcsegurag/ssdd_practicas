@@ -26,8 +26,3 @@ class User(UserMixin):
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
-class Video():
-
-    def __init__(self, vid, filename):
-        self.vid = vid
-        self.filename = name

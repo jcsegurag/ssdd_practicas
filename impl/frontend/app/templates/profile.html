@@ -2,6 +2,12 @@
 
 {% block content %}
 <h1 class="title">
-    Welcome, {{current_user.name}}, {{current_user.email}}
+    Welcome, {{name}}, {{email}}
 </h1>
+<h2>
+    Tu número de visitas es {{visits}}
+</h2>
+<h2>
+    Tu token personal es {{token}}
+</h2>
 {% endblock %}

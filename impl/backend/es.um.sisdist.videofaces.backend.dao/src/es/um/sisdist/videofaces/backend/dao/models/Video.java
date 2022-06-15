@@ -15,9 +15,8 @@ public class Video
 
     private PROCESS_STATUS pstatus;
     private String date;
-    private String filename; // En caso de que se utilice un esquema híbrido de usar un sistema de ficheros
+    private String filename;
 
-    // Note: blob data is not included
 
     public Video()
     {

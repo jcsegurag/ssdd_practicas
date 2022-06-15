@@ -32,6 +32,7 @@ public class CheckLoginEndpoint
     {
         Optional<User> user = impl.checkLogin(userDTO.getEmail(), userDTO.getPassword());
         if (user.isPresent()) {
+        	impl.addVisita(user.get().getId(), user.get().getVisits());
         	JsonObject value = Json.createObjectBuilder().add("userid", user.get().getId()).add("name", user.get().getName())
 			.add("email", user.get().getEmail()).add("password", user.get().getPassword_hash()).build();
         	return Response.ok(value).status(Status.OK).build();

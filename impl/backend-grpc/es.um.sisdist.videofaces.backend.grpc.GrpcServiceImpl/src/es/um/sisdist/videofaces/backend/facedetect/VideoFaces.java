@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.InputStream;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
@@ -78,11 +79,6 @@ public class VideoFaces extends Thread
 	        running.set(false);
 	    }*/
 	public void run() {
-		// VideoCapture vc = new VideoCapture( 320, 240 );
-        // VideoDisplay<MBFImage> video = VideoDisplay.createVideoDisplay( vc );
-		//Optional<Blob> videoData = daoVideo.getVideoById(id);
-		//Blob videoD = daoVideo.getVideoById(id);
-		logger.info("-----------------------------------------------------------------ESTAMOS EN EL HILO -----------------------------------------------------------------");
 
     	String videoDir = "/tmp/"+uid+"/videos/";
 		File videos = new File(videoDir);
@@ -95,19 +91,17 @@ public class VideoFaces extends Thread
 			faces.mkdirs();
 		}
     			
-    	//String videoPath = "/tmp/"+uid+"/"+id+".mp4";
 		String videoPath = videoDir+id+".mp4";
-		InputStream videoStream = daoVideo.getStreamForVideo(id);
+		InputStream videoStream = InputStream videoStream = daoVideo.getStreamForVideo(id);
 		try {
 			copyInputStreamToFile(videoStream, videoPath);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//XuggleVideo xuggleVideo = new XuggleVideo(videoStream);
 		 Video<MBFImage> video = new XuggleVideo(videoPath);
-		//Video<MBFImage> videoImagen = xuggleVideo;
 		VideoDisplay<MBFImage> vd = VideoDisplay.createOffscreenVideoDisplay(video);
+		
         // El Thread de procesamiento de vídeo se termina al terminar el vídeo.
         vd.setEndAction(EndAction.CLOSE_AT_END);
         vd.addVideoListener(new VideoDisplayListener<MBFImage>() {
@@ -161,12 +155,15 @@ public class VideoFaces extends Thread
 			}
             File videoRemove = new File(videoPath);
             videoRemove.delete();
-            File imagenes = new File(facesDir);
-            imagenes.delete();
+            try {
+				FileUtils.deleteDirectory(new File(facesDir));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     });
 
-    System.out.println("Fin.");
     }
 }
 
