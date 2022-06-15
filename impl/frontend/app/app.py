@@ -9,6 +9,8 @@ from forms import LoginForm, RegisterForm, SendVideoForm
 import requests
 import json
 import hashlib
+import base64
+import collections
 app = Flask(__name__, static_url_path='')
 login_manager = LoginManager()
 login_manager.init_app(app)  # Para mantener la sesión
@@ -93,30 +95,43 @@ def register():
             return render_template('register.html', form=form, error=error)
 
     return render_template('register.html', form=form, error=error)
-'''
-@app.route('/send_video', methods=['GET', 'POST'])
-@login_required
-def send_video():
-    error = None
-    form = SendVideoForm()
-    if request.method == "POST" and form.validate():
-        # A video is being sent
-        files = {'file': (form.file.data.filename, # filename
-                          form.file.data, current_user.get_id())} # file stream to resend
-        # print(requests.Request('POST', 'http://localhost:8080/rest/uploadVideo',
-        #                        files=files).prepare().body.decode('utf-8'))
-        REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
-        url = 'http://'+REST_SERVER+':8080/rest/uploadVideo'
-        #url = 'http://'+REST_SERVER+':8080/rest/users/'+ current_user.get_id() + '/' + video.filename() + '/video'
-        response = requests.post(url,
-                                 files=files)
-        if response.status_code == 200:
-            error = "Video uploaded successfully"
-        else:
-            error = response.text
 
-    return render_template('send_video.html', form=form, error=error)
-'''
+
+@app.route('/videos/<idVideo>', methods=['GET', 'POST'])
+@login_required
+def video_info(idVideo):
+    error = None
+    REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+    url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)+'/videos/'+idVideo
+    response = requests.get(url)
+    
+    if response.status_code == 200: 
+        data = response.json()
+        jsonData = json.loads(response.text)
+        return render_template('video_info.html', listFaces=jsonData, error=error)
+    
+    
+    return render_template('list_videos.html', listFaces=data, error=error)
+
+
+
+
+@app.route('/videos/', methods=['GET'])
+@login_required
+def list_videos():
+    error = None
+    if request.method == "GET":
+        REST_SERVER = os.environ.get('REST_SERVER', 'localhost')
+        url = 'http://'+REST_SERVER+':8080/rest/users/'+str(current_user.id)+'/videos/'
+        response = requests.get(url)
+        print('-------------------------------------------------------------------------')
+        if response.status_code == 200: 
+            data = response.json()
+
+            return render_template('list_videos.html', data=data, error=error)
+    error = response.status_code
+    form = RegisterForm(request.form)
+    return render_template('register.html', form = form, error=error)
 @app.route('/send_video', methods=['GET', 'POST'])
 @login_required
 def send_video():

@@ -15,7 +15,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-@Path("/users/{userid}/videos/")//Cambiar el path para coger el user id
+/*@Path("/users/{userid}/videos/")//Cambiar el path para coger el user id
 //@Path("/uploadVideo")//Cambiar el path para coger el user id
 public class UploadVideoEndpoint
 {
@@ -32,4 +32,4 @@ public class UploadVideoEndpoint
     	impl.uploadVideo(filename, uid, fileInputStream);
         return Response.ok(fileMetaData.getFileName()).build();
     }
-}
+}*/

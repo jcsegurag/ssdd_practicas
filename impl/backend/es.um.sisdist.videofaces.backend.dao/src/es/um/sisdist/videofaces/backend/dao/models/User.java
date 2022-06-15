@@ -6,6 +6,7 @@ package es.um.sisdist.videofaces.backend.dao.models;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID; 
 //import io.jsonwebtoken.Jwts;
 //import io.jsonwebtoken.SignatureAlgorithm;
 public class User
@@ -41,12 +42,10 @@ public class User
 		}
 	}
 	public static String generateToken(String id, String username) {
-		/*// HMAC utilizando el SHA-256 y la palabra alumno en base64
-		String token = Jwts.builder().setSubject(username).setIssuer(id)
-				.signWith(SignatureAlgorithm.HS256, "YWx1bW5v").compact();
-		this.token = token;
-		return token;*/
-		return null;
+		
+		UUID uuid=UUID.randomUUID();   
+		String token = uuid.toString(); 
+		return token;
 	}
 	
 	private String id;

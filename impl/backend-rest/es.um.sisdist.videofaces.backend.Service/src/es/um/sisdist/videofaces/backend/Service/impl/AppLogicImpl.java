@@ -6,6 +6,7 @@ package es.um.sisdist.videofaces.backend.Service.impl;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import es.um.sisdist.videofaces.backend.dao.DAOFactoryImpl;
 import es.um.sisdist.videofaces.backend.dao.IDAOFactory;
+import es.um.sisdist.videofaces.backend.dao.models.Face;
 import es.um.sisdist.videofaces.backend.dao.models.User;
 import es.um.sisdist.videofaces.backend.dao.models.Video;
 import es.um.sisdist.videofaces.backend.dao.user.IUserDAO;
@@ -80,6 +82,17 @@ public class AppLogicImpl
         return daoUser.getUserById(userId);
     }
 
+    public Optional<Video> getVideoById(String vid)
+    {
+        return daoVideo.getVideoById(vid);
+    }
+    public LinkedList<Video> getVideosByUid(String uid){
+    	return daoVideo.getVideosByUid(uid);
+    	
+    }
+    public LinkedList<Face> getFacesByVid(String vid){
+    	return daoVideo.getFacesByVid(vid);
+    }
     /*public boolean isVideoReady(String videoId)
     {
         // Test de grpc, puede hacerse con la BD
@@ -179,5 +192,4 @@ public class AppLogicImpl
     	this.sendVideoGrpc(video);
     	return video;
     }
-    
 }

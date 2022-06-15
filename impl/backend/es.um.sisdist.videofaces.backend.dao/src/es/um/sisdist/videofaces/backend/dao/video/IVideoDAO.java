@@ -4,17 +4,21 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.LinkedList;
 import java.sql.Blob;
 import es.um.sisdist.videofaces.backend.dao.models.Video;
-
+import es.um.sisdist.videofaces.backend.dao.models.Face;
 public interface IVideoDAO
 {
-    public Optional<Blob> getVideoById(String id);
-
+    Optional<Video> getVideoById(String id);
+  //  public Optional<Video> getVideoByUid(String uid);
+    LinkedList<Video> getVideosByUid(String uid);
     // Get stream of video data
-    public InputStream getStreamForVideo(String id);
+    LinkedList<Face> getFacesByVid(String vid);
+    InputStream getStreamForVideo(String id);
 
-    public Video.PROCESS_STATUS getVideoStatus(String id);
+    Video.PROCESS_STATUS getVideoStatus(String id);
 
 	Optional<Video> saveVideo(String userid, LocalDateTime localDateTime, String filename, InputStream inputStream);
+	void saveImage(String vid, InputStream datosImagen);
 }

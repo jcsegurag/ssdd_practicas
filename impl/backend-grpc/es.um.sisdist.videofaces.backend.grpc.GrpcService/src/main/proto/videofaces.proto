@@ -13,14 +13,6 @@ service GrpcService
     //rpc IsVideoReady(VideoSpec) returns (VideoAvailability);
 }
 
-// Se envían trozos de vídeo, ya que puede ser muy grande
-/*message VideoAndChunkData
-{
-    oneof VideoInfo {
-        string videoid = 1;
-    	bytes data = 2;
-    }
-}*/
 
 message VideoSpec
 {

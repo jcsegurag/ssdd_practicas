@@ -56,10 +56,11 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 			public void onNext(VideoSpec videoSpec) 
 			{
 				
-				logger.info("Add video  " + videoSpec.getId());
+				logger.info("------------------------------Add video----------------------------------------------  " + videoSpec.getId());
 		    	VideoFaces videofaces = new VideoFaces(videoSpec.getId(), videoSpec.getUid());
-		    	Thread thread = new Thread(videofaces);
-		    	thread.start();
+		    	videofaces.start();
+		    	//Thread thread = new Thread(videofaces);
+		    	//thread.start();
 			}
 		};
 	}

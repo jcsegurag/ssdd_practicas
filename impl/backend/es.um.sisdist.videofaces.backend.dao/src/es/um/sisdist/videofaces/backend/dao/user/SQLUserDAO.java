@@ -127,8 +127,7 @@ public class SQLUserDAO implements IUserDAO
 			preparedStmt.setString(2, email);
 			preparedStmt.setString(3, username);
 			preparedStmt.setString(4, User.md5pass(password));
-			//String token = User.generateToken(id, username);
-			String token = "alumno";
+			String token = User.generateToken(id, username);
 			preparedStmt.setString(5, token);
 			// Numero de visitas
 			preparedStmt.setInt(6, 0);
