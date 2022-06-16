@@ -71,13 +71,9 @@ public class VideoFaces extends Thread
 		    for (final File imagen : folder.listFiles()) {
 		    	InputStream datosImagen = new FileInputStream(imagen);
 		    		daoVideo.saveImage(vid, datosImagen);
-		            //System.out.println(fileEntry.getName());
 		        }
 	}
 	 
-	   /* public void stop() {
-	        running.set(false);
-	    }*/
 	public void run() {
 
     	String videoDir = "/tmp/"+uid+"/videos/";
@@ -85,18 +81,17 @@ public class VideoFaces extends Thread
 		if(!videos.exists()) {
 			videos.mkdirs();
 		}
-    	String facesDir = "/tmp/"+uid+"/faces/";
+    	String facesDir = "/tmp/"+uid+"/"+id+"/faces/";
 		File faces = new File(facesDir);
 		if(!faces.exists()) {
 			faces.mkdirs();
 		}
     			
 		String videoPath = videoDir+id+".mp4";
-		InputStream videoStream = InputStream videoStream = daoVideo.getStreamForVideo(id);
+		InputStream videoStream = daoVideo.getStreamForVideo(id);
 		try {
 			copyInputStreamToFile(videoStream, videoPath);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		 Video<MBFImage> video = new XuggleVideo(videoPath);
@@ -119,12 +114,10 @@ public class VideoFaces extends Thread
                 frame.drawShape(face.getBounds(), RGBColour.RED);
                 try
                 {
-                    // También permite enviar la imagen a un OutputStream
                     ImageUtilities.write(frame.extractROI(face.getBounds()),
                             new File(String.format(facesDir+"img%05d.jpg", imgn++)));
                 } catch (IOException e)
                 {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 System.out.println("!");
@@ -150,7 +143,6 @@ public class VideoFaces extends Thread
             try {
 				saveImages(faces, id);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             File videoRemove = new File(videoPath);
@@ -158,7 +150,6 @@ public class VideoFaces extends Thread
             try {
 				FileUtils.deleteDirectory(new File(facesDir));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }

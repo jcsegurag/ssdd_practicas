@@ -13,7 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import es.um.sisdist.videofaces.backend.dao.models.User;
 
-class AppLogicImplTest
+/*class AppLogicImplTest
 {
 	public static void main(String[] args) {
 		
@@ -59,4 +59,4 @@ class AppLogicImplTest
 		client.close();
 		
 	}
-}
+}*/

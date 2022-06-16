@@ -57,7 +57,6 @@ public class SQLUserDAO implements IUserDAO
 				return createUser(result);
 		} catch (SQLException e)
 		{
-			// Fallthrough
 		}
 		return Optional.empty();
 	}
@@ -75,7 +74,6 @@ public class SQLUserDAO implements IUserDAO
 				return createUser(result);
 		} catch (SQLException e)
 		{
-			// Fallthrough
 		}
 		return Optional.empty();
 	}
@@ -86,13 +84,11 @@ public class SQLUserDAO implements IUserDAO
 		try
 		{
 			stm = conn.prepareStatement("UPDATE users SET visits = ? WHERE id = ?");
-			System.out.println("----------------------------------LAS VISITAS SON: "+visits++);
 			stm.setInt(1, visits++);
 			stm.setString(2, id);
 			stm.executeUpdate();
 		} catch (SQLException e)
 		{
-			// Fallthrough
 		}
 	}
 	private Optional<User> createUser(ResultSet result)
@@ -122,6 +118,7 @@ public class SQLUserDAO implements IUserDAO
 			ResultSet rs = preparedStmtID.executeQuery();
 			rs.next();
 			String id;
+			
 			// Si no hay ninguna id asignamos al primer usuario la id 0, a partir de ahi cada usuario tendra la id del anterior más 1
 			
 			if(rs.getString(1) == null)

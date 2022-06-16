@@ -30,13 +30,7 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
         daoVideo = daoFactory.createSQLVideoDAO();
 	}
 
-    
-	/*@Override
-	public StreamObserver<VideoAndChunkData> processVideo(StreamObserver<Empty> responseObserver)
-	{
-		// TODO Auto-generated method stub
-		return super.processVideo(responseObserver);
-	}*/
+   
     @Override
 	public StreamObserver<VideoSpec> processVideo(StreamObserver<PetitionAccepted> responseObserver)
 	{
@@ -62,60 +56,4 @@ class GrpcServiceImpl extends GrpcServiceGrpc.GrpcServiceImplBase
 			}
 		};
 	}
-	/*@Override
-	public void isVideoReady(VideoSpec request, StreamObserver<VideoAvailability> responseObserver)
-	{
-		// Acceder a la bd a través del dao y comprobar si el video esta procesado
-		responseObserver.onNext(VideoAvailability.newBuilder().setAvailable(true).build());
-		responseObserver.onCompleted();
-	}*/
-
-
-	/*@Override
-	public void storeImage(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver)
-    {
-		logger.info("Add video " + request.getId());
-    	videoMap.put(request.getId(), request);
-    	responseObserver.onNext(PetitionAccepted.newBuilder().build());
-    	responseObserver.onCompleted();
-	}*/
-
-	/*@Override
-	public StreamObserver<VideoSpec> storeImages(StreamObserver<PetitionAccepted> responseObserver) 
-	{
-		// La respuesta, sólo un objeto Empty
-		responseObserver.onNext(Empty.newBuilder().build());
-
-		// Se retorna un objeto que, al ser llamado en onNext() con cada
-		// elemento enviado por el cliente, reacciona correctamente
-		return new StreamObserver<VideoSpec>() {
-			@Override
-			public void onCompleted() {
-				// Terminar la respuesta.
-				responseObserver.onCompleted();
-			}
-			@Override
-			public void onError(Throwable arg0) {
-			}
-			@Override
-			public void onNext(VideoSpec videoSpec) 
-			{
-				logger.info("Add video  " + videoSpec.getId());
-		    	int videoId = request.getId();	
-			}
-		};
-	}*/
-
-	/*@Override
-	public void obtainImage(VideoSpec request, StreamObserver<PetitionAccepted> responseObserver) {
-		// TODO Auto-generated method stub
-		super.obtainImage(request, responseObserver);
-	}
-
-	@Override
-	public StreamObserver<VideoSpec> obtainCollage(StreamObserver<PetitionAccepted> responseObserver) {
-		// TODO Auto-generated method stub
-		return super.obtainCollage(responseObserver);
-	}*/
-	
 }

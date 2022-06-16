@@ -31,7 +31,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-// POJO, no interface no extends
 
 @Path("/users")
 public class UsersEndpoint
@@ -76,7 +75,6 @@ public class UsersEndpoint
     @Path("/{userid}/videos/{idVideo}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFacesByVid(@PathParam("idVideo") String vid) {
-    	//Optional<Video> video = impl.getVideoById(vid);
     	
     	LinkedList<Face> listaFaces = impl.getFacesByVid(vid);
     	LinkedList<FaceDTO> listaFacesDTO = new LinkedList<FaceDTO>();
@@ -86,9 +84,4 @@ public class UsersEndpoint
     	return Response.status(Response.Status.OK).entity(listaFacesDTO).type(MediaType.APPLICATION_JSON).build();
     }
     
-    /*public VideoDTO getVideoInfo(@PathParam("uid") String uid)
-    {
-    	return VideoDTOUtils.toDTO(impl.getVideoByUid(uid))
-    	return UserDTOUtils.toDTO(impl.getUserByEmail(username).orElse(null));    	
-    }*/
 }

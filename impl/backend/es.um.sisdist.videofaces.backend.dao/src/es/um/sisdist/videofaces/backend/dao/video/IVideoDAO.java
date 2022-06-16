@@ -11,10 +11,10 @@ import es.um.sisdist.videofaces.backend.dao.models.Face;
 public interface IVideoDAO
 {
     Optional<Video> getVideoById(String id);
-  //  public Optional<Video> getVideoByUid(String uid);
     LinkedList<Video> getVideosByUid(String uid);
-    // Get stream of video data
+    
     LinkedList<Face> getFacesByVid(String vid);
+    // Get stream of video data
     InputStream getStreamForVideo(String id);
 
     Video.PROCESS_STATUS getVideoStatus(String id);
