@@ -36,7 +36,6 @@ public class SQLUserDAO implements IUserDAO
 			conn = DriverManager.getConnection("jdbc:mysql://" +
 					sqlServerName.orElse("localhost") +
 					"/videofaces?user=root&password=root");
-			
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block

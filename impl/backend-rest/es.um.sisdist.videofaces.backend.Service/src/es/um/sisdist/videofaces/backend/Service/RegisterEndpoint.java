@@ -41,5 +41,6 @@ public class RegisterEndpoint
 				.add("email", user.get().getEmail()).add("password", user.get().getPassword_hash()).build();
 		
 		return Response.ok(value).status(Status.CREATED).build();
+
     }
 }

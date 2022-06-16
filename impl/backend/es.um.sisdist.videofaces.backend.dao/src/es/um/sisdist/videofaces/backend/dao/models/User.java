@@ -6,6 +6,7 @@ package es.um.sisdist.videofaces.backend.dao.models;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.UUID; 
 //import io.jsonwebtoken.Jwts;
 //import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,6 +49,12 @@ public class User
 		return token;
 	}
 	
+	public static String generateAuthtoken(String url, String token, String date) {
+			String cadenaAuth = url+date+token;
+	    	String authHash = User.md5pass(cadenaAuth);
+		    return authHash;
+		    
+		}
 	private String id;
 	private String email;
 	private String password_hash;

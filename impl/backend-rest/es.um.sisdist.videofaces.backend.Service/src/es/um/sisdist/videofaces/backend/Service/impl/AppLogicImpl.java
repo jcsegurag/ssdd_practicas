@@ -70,7 +70,20 @@ public class AppLogicImpl
     {
         return instance;
     }
-
+    public boolean isAuthenticated(String uid, String authToken, String url, String date) {
+    	Optional<User> usuarioOptional = daoUser.getUserById(uid);
+    	User usuarioCorrecto = usuarioOptional.get();
+    	System.out.println("Token:"+usuarioCorrecto.getTOKEN());
+    	System.out.println(url);
+    	System.out.println(date);
+    	
+    	String authTokenCorrecto = User.generateAuthtoken(url, usuarioCorrecto.getTOKEN(), date);
+    	System.out.println("Auth-Token: "+authTokenCorrecto);
+    	if(authTokenCorrecto.equals(authToken))
+    		return true;
+    	return false;
+    	
+    }
     public Optional<User> getUserByEmail(String email)
     {
         Optional<User> u = daoUser.getUserByEmail(email);

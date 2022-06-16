@@ -10,31 +10,35 @@ import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
+import jakarta.ws.rs.core.HttpHeaders; 
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import es.um.sisdist.videofaces.models.VideoDTO;
+import es.um.sisdist.videofaces.models.VideoDTOUtils;
+import jakarta.ws.rs.core.MultivaluedMap;
 @Path("/apiexterna")
 public class ExternalApiEndpoint {
     private AppLogicImpl impl = AppLogicImpl.getInstance();
     @POST
+    @Path("/videos")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response registerUser(UserDTO userDTO)
-    {
-        Optional<User> u = impl.checkRegister(userDTO.getEmail());
-        if (u.isPresent())
-        	// El usuario ya ha sido creado
-        	return Response.status(Status.CONFLICT).build();
-        // Registrar
-		Optional<User> user = impl.registerUser(userDTO.getEmail(), userDTO.getName(), userDTO.getPassword());
-		System.out.println(user.get().getEmail() + "|| " + user.get().getName() + " || " + user.get().getPassword_hash()
-				+ " || " + user.get().getId());
-		JsonObject value = Json.createObjectBuilder().add("userid", user.get().getId()).add("name", user.get().getName())
-				.add("email", user.get().getEmail()).add("password", user.get().getPassword_hash()).build();
-		
-		return Response.ok(value).status(Status.CREATED).build();
-    }
+	public Response videoAuth(@Context HttpHeaders headers) {
+    	
+    	MultivaluedMap<String, String> headerParams = headers.getRequestHeaders();
+    	String userId = headerParams.get("User").get(0);
+    	String authToken = headerParams.get("Auth-Token").get(0);
+    	String date = headerParams.get("Date").get(0);
+    	String url = "http://localhost:8080/rest/apiexterna/videos";
+		if (impl.isAuthenticated(userId, authToken, url, date))
+			return Response.ok().status(Status.OK).build();
+		else
+			return Response.status(Status.FORBIDDEN).build();
 
+	}
 }
